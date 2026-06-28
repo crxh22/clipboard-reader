@@ -9,19 +9,28 @@ import com.clipboardreader.reader.ReaderService
 
 /**
  * No-UI activity launched by the Quick Settings tile / floating bubble / shortcut.
- * Reads the clipboard in [onResume] (when it actually holds focus — required on Android 10+)
- * then hands the text to [ReaderService] and finishes.
+ *
+ * Android 10+ only lets an app read the clipboard while it actually holds window
+ * focus. onResume() runs BEFORE focus is granted, so reading there returns null
+ * ("clipboard gol"). We therefore read in onWindowFocusChanged(true) — the first
+ * moment we are guaranteed to have focus — then hand the text to the reader and finish.
  */
 class ClipboardReadActivity : Activity() {
-    override fun onResume() {
-        super.onResume()
-        val text = clipboardText()
-        if (text.isNullOrBlank()) {
-            Toast.makeText(this, R.string.clipboard_empty, Toast.LENGTH_SHORT).show()
-        } else {
-            ReaderService.read(this, text)
+
+    private var handled = false
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus && !handled) {
+            handled = true
+            val text = clipboardText()
+            if (text.isNullOrBlank()) {
+                Toast.makeText(this, R.string.clipboard_empty, Toast.LENGTH_SHORT).show()
+            } else {
+                ReaderService.read(this, text)
+            }
+            finish()
         }
-        finish()
     }
 
     private fun clipboardText(): String? {
