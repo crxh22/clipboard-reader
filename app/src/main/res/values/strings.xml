@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">CitesteMi</string>
+
+    <!-- Entry points -->
+    <string name="action_read_aloud">Citeste cu voce</string>
+    <string name="tile_label">Citeste clipboard</string>
+
+    <!-- Notifications -->
+    <string name="notif_reading">Citesc textul…</string>
+    <string name="channel_reading">Citire</string>
+    <string name="channel_bubble">Buton flotant</string>
+    <string name="action_stop">Opreste</string>
+    <string name="action_hide_bubble">Ascunde</string>
+    <string name="bubble_active">CitesteMi — buton flotant activ</string>
+    <string name="clipboard_empty">Clipboard gol</string>
+
+    <!-- Main screen -->
+    <string name="main_title">CitesteMi</string>
+    <string name="main_help">Cum folosesti:\n\n• In Chrome: selecteaza textul, apoi alege \"Citeste cu voce\" din meniul de selectie.\n\n• In Facebook: copiaza textul, apoi apasa butonul flotant (sau dala \"Citeste clipboard\" din panoul rapid).\n\n• Din orice aplicatie: Distribuie / Share -> CitesteMi.\n\nLimba se alege automat: text in chirilica -> rusa, altfel romana.</string>
+    <string name="btn_read_clipboard">Citeste din clipboard acum</string>
+    <string name="btn_stop">Opreste citirea</string>
+    <string name="label_language">Limba</string>
+    <string name="lang_auto">Automat (ro / ru)</string>
+    <string name="lang_ro">Romana</string>
+    <string name="lang_ru">Rusa</string>
+    <string name="label_speed">Viteza</string>
+    <string name="label_bubble">Buton flotant (pentru Facebook)</string>
+    <string name="bubble_need_overlay">Permite afisarea peste alte aplicatii, apoi reactiveaza butonul.</string>
+    <string name="voices_ok">Vocile romana si rusa sunt instalate.</string>
+    <string name="voices_missing">Lipsesc voci (romana / rusa). Apasa pentru a le instala.</string>
+    <string name="btn_install_voices">Instaleaza vocile</string>
+</resources>

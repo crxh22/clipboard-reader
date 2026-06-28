@@ -1,0 +1,11 @@
+<resources>
+    <style name="Theme.ClipboardReader" parent="Theme.Material3.DayNight" />
+
+    <!-- No-UI activities that just grab focus, read text, and finish. -->
+    <style name="Theme.Transparent" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+</resources>

@@ -3,6 +3,11 @@
 Plan pe faze. Fiecare faza se termina cu un APK instalabil pe telefon (construit
 automat pe GitHub), ca sa poti testa pe bune dupa fiecare pas.
 
+**Stare la zi (v0.1):** Fazele 0-3 sunt in mare facute si livrate in primul build:
+auto-detectie ro/ru, "Citeste cu voce" (Chrome), share, dala in panoul rapid,
+serviciu de citire cu notificare, buton flotant (Facebook), ecran cu viteza +
+limba. Compileaza curat, 8 teste unitare trec. Urmeaza testul pe telefonul tau.
+
 ---
 
 ## Faza 0 — Schelet + lant de build (infra)
@@ -51,18 +56,20 @@ descarci si apesi.
 
 ---
 
-## Decizii (am nevoie de confirmarea ta — am si recomandare la fiecare)
+## Decizii (rezolvate 28-06)
 
-1. **Modul de declansare din clipboard.** Android nu lasa citire automata in
-   fundal (vezi README). Recomandarea mea: buton in panoul rapid (un tap) +
-   "selectezi text -> Citeste cu voce" + share. **OK asa, sau te asteptai la
-   altceva?**
+1. **Declansare:** Chrome → "Citeste cu voce" din meniul de selectie; Facebook →
+   buton flotant dupa Copy (plus dala in panoul rapid); share din orice aplicatie.
+2. **Limba:** romana + rusa, alese **automat** dupa scris (chirilica → rusa),
+   cu fixare manuala optionala.
+3. **Build:** schelet + GitHub Actions = gata; in plus, build local complet pe
+   server (compileaza + teste unitare).
 
-2. **Limba.** Recomand: romana implicit la inceput, iar detectia automata a
-   limbii o adaugam in Faza 4. **Citesti mai ales in romana, sau ai nevoie si de
-   engleza/alte limbi de la inceput?**
-
-3. **Pornesc Faza 0 acum?** Adica fac scheletul + build-ul automat pe GitHub, ca
-   sa ai repede un APK de probat. Recomand: da.
-
-Numele aplicatiei si icon-ul le putem alege pe parcurs (nu blocheaza nimic).
+## Ce urmeaza
+- Testul pe telefonul tau (vocea, dala, butonul flotant) — singurul lucru care nu
+  se poate verifica fara un telefon real.
+- Semnatura stabila a APK-ului, ca update-urile sa se instaleze peste cel vechi
+  fara dezinstalare (acum primul build e semnat de test).
+- Optional, daca Facebook ascunde meniul de selectie: varianta cu serviciu de
+  accesibilitate (citeste textul selectat direct, fara Copy).
+- Icon si nume final, finisaje.
