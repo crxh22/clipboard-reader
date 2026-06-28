@@ -1,0 +1,22 @@
+# Gradle / build output
+.gradle/
+build/
+**/build/
+captures/
+
+# Android Studio / IDE
+.idea/
+*.iml
+local.properties
+.DS_Store
+
+# Kotlin
+.kotlin/
+
+# Signing / secrets — never commit keystores or signing config
+*.jks
+*.keystore
+keystore.properties
+
+# Logs
+*.log
