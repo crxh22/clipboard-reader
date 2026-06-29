@@ -27,6 +27,7 @@ class ClipboardReadActivity : Activity() {
             if (text.isNullOrBlank()) {
                 Toast.makeText(this, R.string.clipboard_empty, Toast.LENGTH_SHORT).show()
             } else {
+                Toast.makeText(this, getString(R.string.reading_chars, text.length), Toast.LENGTH_SHORT).show()
                 ReaderService.read(this, text)
             }
             finish()

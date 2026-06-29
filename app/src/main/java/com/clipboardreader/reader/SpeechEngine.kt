@@ -13,6 +13,7 @@ import com.clipboardreader.Prefs
 class SpeechEngine(
     context: Context,
     private val onState: (PlaybackState.State) -> Unit,
+    private val onError: (String) -> Unit = {},
 ) {
     private val appContext = context.applicationContext
     private var tts: TextToSpeech? = null
@@ -39,6 +40,7 @@ class SpeechEngine(
                     speakFrom(pos)
                 }
             } else {
+                onError("init")
                 onState(PlaybackState.State.IDLE)
             }
         }

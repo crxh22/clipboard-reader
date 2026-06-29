@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.clipboardreader.MainActivity
 import com.clipboardreader.Prefs
@@ -27,7 +28,11 @@ class ReaderService : Service() {
     override fun onCreate() {
         super.onCreate()
         audioManager = getSystemService(Context.AUDIO_SERVICE) as? AudioManager
-        engine = SpeechEngine(this) { st -> main.post { onEngineState(st) } }
+        engine = SpeechEngine(
+            context = this,
+            onState = { st -> main.post { onEngineState(st) } },
+            onError = { main.post { Toast.makeText(this, R.string.tts_unavailable, Toast.LENGTH_LONG).show() } },
+        )
         engine.init()
         createChannel()
     }

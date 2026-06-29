@@ -16,6 +16,8 @@
     <string name="action_hide_bubble">Ascunde</string>
     <string name="bubble_active">CitesteMi — buton flotant activ</string>
     <string name="clipboard_empty">Clipboard gol</string>
+    <string name="reading_chars">Citesc %1$d caractere</string>
+    <string name="tts_unavailable">Motor de voce indisponibil pe telefon</string>
 
     <!-- Main screen -->
     <string name="main_title">CitesteMi</string>
