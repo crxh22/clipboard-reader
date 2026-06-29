@@ -18,5 +18,8 @@ local.properties
 *.keystore
 keystore.properties
 
+# Launcher-assembled context (rebuilt each launch by clipboard_canon.sh)
+_assembled_context.md
+
 # Logs
 *.log

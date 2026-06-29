@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/artur/projects/clipboard-reader/.claude/hooks/cr-context-guard.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
