@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:text="@string/main_title"
             android:textColor="#111418"
-            android:textSize="32sp"
+            android:textSize="30sp"
             android:textStyle="bold" />
 
         <TextView
@@ -28,14 +28,60 @@
             android:textColor="#8A9098"
             android:textSize="14sp" />
 
-        <!-- Now-reading card -->
+        <!-- Floating-button toggle — kept near the top so it never needs scrolling -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_bubble"
+                    android:textColor="#111418"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:text="@string/ui_bubble_desc"
+                    android:textColor="#8A9098"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/swBubble"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="#EEEEEE" />
+
+        <!-- Compact now-reading strip -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:background="@drawable/card_bg"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingLeft="14dp"
+            android:paddingTop="12dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="12dp">
 
             <TextView
                 android:id="@+id/tvNowLabel"
@@ -44,19 +90,19 @@
                 android:text="@string/ui_now_reading"
                 android:textColor="#9AA0A6"
                 android:textSize="11sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tvPreview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:text="@string/ui_idle_hint"
-                android:textColor="#3C4148"
-                android:textSize="16sp"
-                android:lineSpacingMultiplier="1.3"
-                android:maxLines="4"
-                android:ellipsize="end" />
+                android:textColor="#6B7178"
+                android:textSize="13sp" />
         </LinearLayout>
 
         <ProgressBar
@@ -64,7 +110,7 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="14dp"
             android:max="100"
             android:progress="0"
             android:progressTint="#0A84FF" />
@@ -73,7 +119,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="16dp"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -88,10 +134,10 @@
                     android:layout_width="58dp"
                     android:layout_height="58dp"
                     android:background="@drawable/side_button_bg"
+                    android:contentDescription="@string/back_2_words"
                     android:padding="16dp"
                     android:src="@drawable/ic_skip_back"
-                    android:tint="#3C4148"
-                    android:contentDescription="@string/back_2_words" />
+                    android:tint="#3C4148" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -109,10 +155,10 @@
                 android:layout_marginStart="28dp"
                 android:layout_marginEnd="28dp"
                 android:background="@drawable/play_button_bg"
+                android:contentDescription="@string/main_title"
                 android:padding="24dp"
                 android:src="@drawable/ic_play"
-                android:tint="#FFFFFF"
-                android:contentDescription="@string/main_title" />
+                android:tint="#FFFFFF" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -125,10 +171,10 @@
                     android:layout_width="58dp"
                     android:layout_height="58dp"
                     android:background="@drawable/side_button_bg"
+                    android:contentDescription="@string/fwd_2_words"
                     android:padding="16dp"
                     android:src="@drawable/ic_skip_fwd"
-                    android:tint="#3C4148"
-                    android:contentDescription="@string/fwd_2_words" />
+                    android:tint="#3C4148" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -198,34 +244,6 @@
             app:icon="@drawable/ic_stat_speak"
             app:iconGravity="textStart"
             app:iconTint="#FFFFFF" />
-
-        <!-- Bubble toggle -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_bubble"
-                    android:textColor="#111418"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/swBubble"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
 
         <TextView
             android:id="@+id/tvVoiceStatus"

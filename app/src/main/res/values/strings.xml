@@ -34,7 +34,8 @@
     <string name="lang_ro">Romana</string>
     <string name="lang_ru">Rusa</string>
     <string name="label_speed">Viteza</string>
-    <string name="label_bubble">Buton flotant (pentru Facebook)</string>
+    <string name="label_bubble">Buton flotant</string>
+    <string name="ui_bubble_desc">Butonul de pe ecran, pentru Facebook</string>
     <string name="bubble_need_overlay">Permite afisarea peste alte aplicatii, apoi reactiveaza butonul.</string>
     <string name="voices_ok">Vocile romana si rusa sunt instalate.</string>
     <string name="voices_missing">Lipsesc voci (romana / rusa). Apasa pentru a le instala.</string>

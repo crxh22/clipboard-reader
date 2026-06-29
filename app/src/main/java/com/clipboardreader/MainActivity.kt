@@ -20,10 +20,10 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SwitchCompat
 import com.clipboardreader.bubble.BubbleService
 import com.clipboardreader.reader.PlaybackState
 import com.clipboardreader.reader.ReaderService
+import com.google.android.material.materialswitch.MaterialSwitch
 import java.util.Locale
 import kotlin.math.abs
 
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvNowLabel: TextView
     private lateinit var tvPreview: TextView
     private lateinit var pbProgress: ProgressBar
-    private lateinit var swBubble: SwitchCompat
+    private lateinit var swBubble: MaterialSwitch
     private lateinit var tvVoiceStatus: TextView
     private lateinit var btnInstallVoices: Button
 
