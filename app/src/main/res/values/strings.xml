@@ -21,6 +21,11 @@
 
     <!-- Main screen -->
     <string name="main_title">CitesteMi</string>
+    <string name="ui_subtitle">Citeste orice text cu voce</string>
+    <string name="ui_now_reading">Se citeste acum</string>
+    <string name="ui_idle_hint">Selecteaza un text in alta aplicatie si alege \"Citeste cu voce\", sau apasa butonul de mai jos ca sa citesc ce ai in clipboard.</string>
+    <string name="back_2_words">−2 cuvinte</string>
+    <string name="fwd_2_words">+2 cuvinte</string>
     <string name="main_help">Cum folosesti:\n\n• In Chrome: selecteaza textul, apoi alege \"Citeste cu voce\" din meniul de selectie.\n\n• In Facebook: copiaza textul, apoi apasa butonul flotant (sau dala \"Citeste clipboard\" din panoul rapid).\n\n• Din orice aplicatie: Distribuie / Share -> CitesteMi.\n\nLimba se alege automat: text in chirilica -> rusa, altfel romana.</string>
     <string name="btn_read_clipboard">Citeste din clipboard acum</string>
     <string name="btn_stop">Opreste citirea</string>

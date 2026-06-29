@@ -52,6 +52,7 @@ class SpeechEngine(
         this.rate = rate
         this.pos = 0
         this.starts = Playback.wordStarts(text)
+        PlaybackState.progress = 0f
         if (text.isBlank()) {
             onState(PlaybackState.State.IDLE)
             return
@@ -81,6 +82,7 @@ class SpeechEngine(
         tts?.stop()
         text = ""
         pos = 0
+        PlaybackState.progress = 0f
         onState(PlaybackState.State.IDLE)
     }
 
@@ -127,12 +129,16 @@ class SpeechEngine(
             if (g != gen) return
             val base = bases.getOrNull(seq) ?: return
             pos = base + start
+            if (text.isNotEmpty()) {
+                PlaybackState.progress = ((base + start).toFloat() / text.length).coerceIn(0f, 1f)
+            }
         }
 
         override fun onDone(utteranceId: String?) {
             val (g, seq) = parse(utteranceId) ?: return
             if (g == gen && seq == lastSeq) {
                 pos = text.length
+                PlaybackState.progress = 1f
                 onState(PlaybackState.State.IDLE)
             }
         }

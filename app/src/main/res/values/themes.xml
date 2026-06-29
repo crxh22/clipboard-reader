@@ -1,5 +1,26 @@
 <resources>
-    <style name="Theme.ClipboardReader" parent="Theme.Material3.DayNight" />
+    <!-- White, minimal look (forced light to match the approved design). -->
+    <style name="Theme.ClipboardReader" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">#FFFFFF</item>
+    </style>
+
+    <!-- Speed / language selectable pill -->
+    <style name="Pill">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">11dp</item>
+        <item name="android:paddingBottom">11dp</item>
+        <item name="android:background">@drawable/pill_bg</item>
+        <item name="android:textColor">@color/pill_text</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
 
     <!-- No-UI activities that just grab focus, read text, and finish. -->
     <style name="Theme.Transparent" parent="android:Theme.Translucent.NoTitleBar">

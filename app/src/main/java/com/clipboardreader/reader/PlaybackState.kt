@@ -10,6 +10,14 @@ object PlaybackState {
     var state: State = State.IDLE
         private set
 
+    /** Text currently loaded for reading (for the in-app "now reading" card). */
+    @Volatile
+    var text: String = ""
+
+    /** Read progress 0f..1f (for the in-app progress bar). */
+    @Volatile
+    var progress: Float = 0f
+
     private val listeners = CopyOnWriteArraySet<(State) -> Unit>()
 
     fun update(s: State) {

@@ -47,6 +47,7 @@ class ReaderService : Service() {
             }
             startForeground(NOTIF_ID, buildNotification(PlaybackState.State.PLAYING))
             requestFocus()
+            PlaybackState.text = text
             engine.start(text, Prefs.langPref(this), Prefs.rate(this))
             return START_NOT_STICKY
         }
