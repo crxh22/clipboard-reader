@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnReadClipboard).setOnClickListener { readClipboard() }
         findViewById<Button>(R.id.btnStop).setOnClickListener {
-            startService(Intent(this, ReaderService::class.java).setAction(ReaderService.ACTION_STOP))
+            ReaderService.control(this, ReaderService.ACTION_STOP)
         }
 
         val rg = findViewById<RadioGroup>(R.id.rgLang)

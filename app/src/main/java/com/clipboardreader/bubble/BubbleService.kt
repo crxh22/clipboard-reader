@@ -11,7 +11,9 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.provider.Settings
 import android.view.Gravity
 import android.view.MotionEvent
@@ -23,17 +25,23 @@ import com.clipboardreader.MainActivity
 import com.clipboardreader.Prefs
 import com.clipboardreader.R
 import com.clipboardreader.intake.ClipboardReadActivity
+import com.clipboardreader.reader.PlaybackState
+import com.clipboardreader.reader.ReaderService
 import kotlin.math.abs
 
 /**
- * Draws a small draggable floating button over other apps. Tapping it reads the clipboard —
- * the universal "minimum taps" path that works even where the selection menu is hidden (Facebook).
+ * Draggable floating button over other apps. Behaviour depends on playback state:
+ * idle -> read the clipboard; playing -> pause; paused -> resume (acts like play/pause).
+ * Works even where the selection menu is hidden (Facebook): copy -> tap bubble.
  */
 class BubbleService : Service() {
 
     private var windowManager: WindowManager? = null
-    private var bubble: View? = null
+    private var bubble: ImageView? = null
     private val params = WindowManager.LayoutParams()
+    private val main = Handler(Looper.getMainLooper())
+
+    private val stateListener: (PlaybackState.State) -> Unit = { st -> main.post { updateIcon(st) } }
 
     override fun onCreate() {
         super.onCreate()
@@ -41,6 +49,7 @@ class BubbleService : Service() {
         startForeground(NOTIF_ID, buildNotification())
         if (Settings.canDrawOverlays(this)) {
             addBubble()
+            PlaybackState.addListener(stateListener)
         }
     }
 
@@ -58,7 +67,7 @@ class BubbleService : Service() {
         params.x = 0
         params.y = (resources.displayMetrics.density * 200).toInt()
 
-        val pad = (resources.displayMetrics.density * 10).toInt()
+        val pad = (resources.displayMetrics.density * 11).toInt()
         val view = ImageView(this).apply {
             setImageResource(R.drawable.ic_stat_speak)
             setBackgroundResource(R.drawable.bubble_bg)
@@ -68,6 +77,16 @@ class BubbleService : Service() {
         attachTouch(view)
         wm.addView(view, params)
         bubble = view
+    }
+
+    private fun updateIcon(st: PlaybackState.State) {
+        bubble?.setImageResource(
+            when (st) {
+                PlaybackState.State.PLAYING -> R.drawable.ic_pause
+                PlaybackState.State.PAUSED -> R.drawable.ic_play
+                PlaybackState.State.IDLE -> R.drawable.ic_stat_speak
+            }
+        )
     }
 
     private fun attachTouch(view: View) {
@@ -105,10 +124,14 @@ class BubbleService : Service() {
     }
 
     private fun onBubbleTap() {
-        startActivity(
-            Intent(this, ClipboardReadActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        )
+        when (PlaybackState.state) {
+            PlaybackState.State.PLAYING -> ReaderService.control(this, ReaderService.ACTION_PAUSE)
+            PlaybackState.State.PAUSED -> ReaderService.control(this, ReaderService.ACTION_RESUME)
+            PlaybackState.State.IDLE -> startActivity(
+                Intent(this, ClipboardReadActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            )
+        }
     }
 
     private fun buildNotification(): Notification {
@@ -132,12 +155,9 @@ class BubbleService : Service() {
 
     private fun createChannel() {
         val mgr = getSystemService(NotificationManager::class.java)
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            getString(R.string.channel_bubble),
-            NotificationManager.IMPORTANCE_MIN,
+        mgr.createNotificationChannel(
+            NotificationChannel(CHANNEL_ID, getString(R.string.channel_bubble), NotificationManager.IMPORTANCE_MIN)
         )
-        mgr.createNotificationChannel(channel)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -149,6 +169,7 @@ class BubbleService : Service() {
     }
 
     override fun onDestroy() {
+        PlaybackState.removeListener(stateListener)
         bubble?.let { windowManager?.removeView(it) }
         bubble = null
         super.onDestroy()

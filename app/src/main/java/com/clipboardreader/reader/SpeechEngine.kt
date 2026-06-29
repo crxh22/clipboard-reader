@@ -3,76 +3,83 @@ package com.clipboardreader.reader
 import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
+import com.clipboardreader.Prefs
 
 /**
- * Thin wrapper around [TextToSpeech]: async init, language auto-detect, chunked playback.
- * [onComplete] fires when the whole text has been spoken; [onFail] on init/playback error.
+ * TTS glue. Plays [start]ed text and supports pause / resume / word-skip by tracking a global
+ * char position via onRangeStart. A generation counter marks utterances from an interrupted
+ * (flushed/stopped) batch as stale, so an intentional stop never flips state incorrectly.
  */
 class SpeechEngine(
     context: Context,
-    private val onComplete: () -> Unit,
-    private val onFail: (String) -> Unit,
+    private val onState: (PlaybackState.State) -> Unit,
 ) {
+    private val appContext = context.applicationContext
     private var tts: TextToSpeech? = null
     private var ready = false
-    private var pending: Request? = null
-    private var total = 0
-    private var completed = 0
+    private var pendingPlay = false
 
-    data class Request(val text: String, val langOverride: String, val rate: Float)
+    private var text = ""
+    private var pos = 0
+    private var starts = IntArray(0)
+    private var lang = Prefs.LANG_AUTO
+    private var rate = 1f
 
-    private val appContext = context.applicationContext
+    private var gen = 0
+    private val bases = ArrayList<Int>()
+    private var lastSeq = -1
 
     fun init() {
         tts = TextToSpeech(appContext) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 ready = true
                 tts?.setOnUtteranceProgressListener(listener)
-                pending?.let { req -> pending = null; speak(req) }
+                if (pendingPlay) {
+                    pendingPlay = false
+                    speakFrom(pos)
+                }
             } else {
-                onFail("init")
+                onState(PlaybackState.State.IDLE)
             }
         }
     }
 
-    private val listener = object : UtteranceProgressListener() {
-        override fun onStart(utteranceId: String?) {}
-        override fun onDone(utteranceId: String?) {
-            completed++
-            if (completed >= total) onComplete()
+    fun start(text: String, lang: String, rate: Float) {
+        this.text = text
+        this.lang = lang
+        this.rate = rate
+        this.pos = 0
+        this.starts = Playback.wordStarts(text)
+        if (text.isBlank()) {
+            onState(PlaybackState.State.IDLE)
+            return
         }
-        @Deprecated("Deprecated in TextToSpeech", ReplaceWith("onError(utteranceId, errorCode)"))
-        override fun onError(utteranceId: String?) {
-            onFail("playback")
-        }
-        override fun onError(utteranceId: String?, errorCode: Int) {
-            onFail("playback:$errorCode")
-        }
+        if (ready) speakFrom(0) else pendingPlay = true
     }
 
-    fun speak(req: Request) {
-        val engine = tts
-        if (engine == null || !ready) {
-            pending = req
-            return
-        }
-        engine.setLanguage(LanguageDetector.localeFor(req.text, req.langOverride))
-        engine.setSpeechRate(req.rate.coerceIn(0.5f, 2.0f))
-        val chunks = TextChunker.chunk(req.text)
-        if (chunks.isEmpty()) {
-            onComplete()
-            return
-        }
-        total = chunks.size
-        completed = 0
-        chunks.forEachIndexed { i, chunk ->
-            val mode = if (i == 0) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
-            engine.speak(chunk, mode, null, "u$i")
-        }
+    fun pause() {
+        gen++ // invalidate in-flight utterances so their onError/onDone are ignored
+        tts?.stop()
+        onState(PlaybackState.State.PAUSED)
+    }
+
+    fun resume() {
+        if (text.isBlank()) return
+        if (ready) speakFrom(pos) else pendingPlay = true
+    }
+
+    fun skipWords(delta: Int) {
+        if (text.isBlank()) return
+        pos = Playback.skipTarget(starts, pos, delta)
+        if (ready) speakFrom(pos) else pendingPlay = true
     }
 
     fun stop() {
+        gen++
         tts?.stop()
+        text = ""
+        pos = 0
+        onState(PlaybackState.State.IDLE)
     }
 
     fun release() {
@@ -80,5 +87,62 @@ class SpeechEngine(
         tts?.shutdown()
         tts = null
         ready = false
+    }
+
+    private fun speakFrom(from: Int) {
+        val engine = tts ?: return
+        val g = ++gen
+        engine.setLanguage(LanguageDetector.localeFor(text, lang))
+        engine.setSpeechRate(rate.coerceIn(0.5f, 2.0f))
+        bases.clear()
+        val pieces = Playback.pieces(text, from)
+        if (pieces.isEmpty()) {
+            onState(PlaybackState.State.IDLE)
+            return
+        }
+        lastSeq = pieces.size - 1
+        pieces.forEachIndexed { seq, (base, piece) ->
+            bases.add(base)
+            val mode = if (seq == 0) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
+            engine.speak(piece, mode, null, "u${g}_$seq")
+        }
+        onState(PlaybackState.State.PLAYING)
+    }
+
+    private fun parse(id: String?): Pair<Int, Int>? {
+        val parts = id?.removePrefix("u")?.split("_") ?: return null
+        if (parts.size != 2) return null
+        val g = parts[0].toIntOrNull() ?: return null
+        val seq = parts[1].toIntOrNull() ?: return null
+        return g to seq
+    }
+
+    private val listener = object : UtteranceProgressListener() {
+        override fun onStart(utteranceId: String?) {}
+
+        override fun onRangeStart(utteranceId: String?, start: Int, end: Int, frame: Int) {
+            val (g, seq) = parse(utteranceId) ?: return
+            if (g != gen) return
+            val base = bases.getOrNull(seq) ?: return
+            pos = base + start
+        }
+
+        override fun onDone(utteranceId: String?) {
+            val (g, seq) = parse(utteranceId) ?: return
+            if (g == gen && seq == lastSeq) {
+                pos = text.length
+                onState(PlaybackState.State.IDLE)
+            }
+        }
+
+        @Deprecated("Deprecated in TextToSpeech")
+        override fun onError(utteranceId: String?) = fail(utteranceId)
+
+        override fun onError(utteranceId: String?, errorCode: Int) = fail(utteranceId)
+
+        private fun fail(utteranceId: String?) {
+            val (g, _) = parse(utteranceId) ?: return
+            if (g == gen) onState(PlaybackState.State.IDLE)
+        }
     }
 }

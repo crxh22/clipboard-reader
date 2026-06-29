@@ -10,6 +10,9 @@
     <string name="channel_reading">Citire</string>
     <string name="channel_bubble">Buton flotant</string>
     <string name="action_stop">Opreste</string>
+    <string name="action_pause">Pauza</string>
+    <string name="action_resume">Reia</string>
+    <string name="notif_paused">Pe pauza</string>
     <string name="action_hide_bubble">Ascunde</string>
     <string name="bubble_active">CitesteMi — buton flotant activ</string>
     <string name="clipboard_empty">Clipboard gol</string>
