@@ -30,15 +30,23 @@ CTXFILE="$DIR/_assembled_context.md"
   printf '\n=== END CLIPBOARD-READER CONTEXT ===\n'
 } > "$CTXFILE"
 
+RC_NAME="${CR_RC_NAME:-$TMUX_SESSION}"
 RC_ARGS=()
-[ -z "${CR_NO_RC:-}" ] && RC_ARGS=( --remote-control "$TMUX_SESSION" )
+[ -z "${CR_NO_RC:-}" ] && RC_ARGS=( --remote-control "$RC_NAME" )
 
-# Already inside tmux (a human in a pane) or opted out -> exec claude directly, no nesting.
-if [ -n "${CR_NO_TMUX:-}" ] || [ -n "${TMUX:-}" ]; then
+# Inside tmux already (human in a pane) and not detaching, or opted out -> exec directly, no nesting.
+if [ -n "${CR_NO_TMUX:-}" ] || { [ -n "${TMUX:-}" ] && [ -z "${CR_DETACH:-}" ]; }; then
   exec "$CLAUDE_BIN" --append-system-prompt-file "$CTXFILE" --model "$MODEL" --effort "$EFFORT" "${RC_ARGS[@]}" "$@"
 fi
 
 command -v tmux >/dev/null 2>&1 || { echo "clipboard_canon: tmux not found (set CR_NO_TMUX=1 to bypass)." >&2; exit 1; }
 CMD="$(printf '%q ' "$CLAUDE_BIN" --append-system-prompt-file "$CTXFILE" --model "$MODEL" --effort "$EFFORT" "${RC_ARGS[@]}" "$@")"
-echo "clipboard_canon: tmux '$TMUX_SESSION' — detach Ctrl-b d, re-attach by rerunning this script." >&2
+
+# CR_DETACH=1 -> create a detached session and return (used to launch a successor, e.g. MOB-NN).
+if [ -n "${CR_DETACH:-}" ]; then
+  tmux new-session -d -s "$TMUX_SESSION" -c "$DIR" "$CMD"
+  echo "clipboard_canon: launched DETACHED tmux '$TMUX_SESSION' (RC '$RC_NAME'). Attach: tmux attach -t $TMUX_SESSION" >&2
+  exit 0
+fi
+echo "clipboard_canon: tmux '$TMUX_SESSION' (RC '$RC_NAME') — detach Ctrl-b d, re-attach by rerunning this script." >&2
 exec tmux new-session -A -s "$TMUX_SESSION" -c "$DIR" "$CMD"

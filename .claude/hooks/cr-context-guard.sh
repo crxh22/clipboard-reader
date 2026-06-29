@@ -38,6 +38,6 @@ NOTICED="$HOME/.claude/cr-ctx-noticed-$SID"   # one note per session
 : > "$NOTICED"
 
 KTOK=$((EST / 1000)); PRAGK=$((THRESHOLD / 1000))
-NOTE="Context is ~${KTOK}k tokens (threshold ${PRAGK}k). At the next natural break: note any in-progress state into PLAN.md, then continue in a FRESH session via ./clipboard_canon.sh (it re-injects the project docs). Keeps long-context quality high. Do not interrupt the current step for this."
+NOTE="Context is ~${KTOK}k tokens (threshold ${PRAGK}k). At the next natural break, hand off per docs/runbooks/session-handoff.md: write docs/handoff/MOB-<next>.md, validate with scripts/check_handoff.py, then launch the successor. Do not interrupt the current step for this."
 python3 -c 'import json,sys; print(json.dumps({"hookSpecificOutput":{"hookEventName":"Stop","additionalContext":sys.argv[1]}}))' "$NOTE"
 exit 0
