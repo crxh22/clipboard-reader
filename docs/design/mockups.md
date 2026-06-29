@@ -4,6 +4,12 @@
 acelasi continut (ca sa compari STILUL), inclusiv controalele play/pauza si
 inainte/inapoi cu cate 2 cuvinte. Spune-mi care iti place — sau o combinatie.
 
+## ✅ ALES (28-06): Minimal alb + controale stil player
+Aspect Minimal alb (iOS), dar butoanele si controalele in stil Spotify/Audible
+(buton mare circular, bara de progres, pastile pentru viteza). Asta se construieste.
+
+![Minimal + Player](mockups/mockup-5-minimal-player.png)
+
 ## 1. Material You (stil Google)
 Luminos, prietenos, butoane rotunjite, accent mov.
 
